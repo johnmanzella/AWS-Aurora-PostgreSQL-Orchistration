@@ -6,10 +6,31 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXFileReference section */
+		0D4B6F662695C8D800850989 /* schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
+		0D4B6F672695C8D800850989 /* artifact.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = artifact.json; sourceTree = "<group>"; };
+		0D4B6F682695C8D800850989 /* artifact.json_working_1 */ = {isa = PBXFileReference; lastKnownFileType = text; path = artifact.json_working_1; sourceTree = "<group>"; };
+		0D4B6F692695C8D800850989 /* build */ = {isa = PBXFileReference; lastKnownFileType = folder; path = build; sourceTree = "<group>"; };
+		0D4B6F6A2695C8D800850989 /* logs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = logs; sourceTree = "<group>"; };
+		0D4B6F6B2695C8D800850989 /* plugin_config.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = plugin_config.yml; sourceTree = "<group>"; };
+		0D4B6F6C2695C8D900850989 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
+		0D4B6F6D2695C8D900850989 /* artifact.json_org */ = {isa = PBXFileReference; lastKnownFileType = text; path = artifact.json_org; sourceTree = "<group>"; };
+		0D4B6F6E2695C8D900850989 /* artifact.json_cluster_snap_issue */ = {isa = PBXFileReference; lastKnownFileType = text; path = artifact.json_cluster_snap_issue; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		0D4B6F5F2695C88A00850989 = {
 			isa = PBXGroup;
 			children = (
+				0D4B6F672695C8D800850989 /* artifact.json */,
+				0D4B6F6E2695C8D900850989 /* artifact.json_cluster_snap_issue */,
+				0D4B6F6D2695C8D900850989 /* artifact.json_org */,
+				0D4B6F682695C8D800850989 /* artifact.json_working_1 */,
+				0D4B6F692695C8D800850989 /* build */,
+				0D4B6F6A2695C8D800850989 /* logs */,
+				0D4B6F6B2695C8D800850989 /* plugin_config.yml */,
+				0D4B6F662695C8D800850989 /* schema.json */,
+				0D4B6F6C2695C8D900850989 /* src */,
 			);
 			sourceTree = "<group>";
 		};
