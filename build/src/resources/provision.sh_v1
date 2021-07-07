@@ -1,0 +1,49 @@
+#!/bin/bash
+
+LOG="/tmp/awspy.log"
+###env >> ${LOG}
+HOST="localhost"
+PORT="9200"
+#DT=`date '+%Y%m%d%H%M%S'`
+DT=`date '+%Y-%m-%d-%H-%M-%S'`
+
+echo "Provision ------------------------------------ Started ${DT}"  >> ${LOG}
+
+#
+if [[ "${SNAP}" == "" ]] 
+then 
+   SNAP="delphix-2019-09-17-15-22-21" 		
+   #SNAP="delphix-2019-09-20-00-58-49"
+fi
+if [[ "${VDB_NAME}" == "" ]]
+then
+   VDB_NAME="my_restore"
+fi
+
+echo "aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${VDB_NAME} --db-snapshot-identifier ${SNAP}" >> ${LOG}
+
+STATUS=`aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${VDB_NAME} --db-snapshot-identifier ${SNAP}`
+echo "${STATUS}" >> ${LOG}
+	
+
+##echo "aws rds create-db-snapshot --db-instance-identifier delphixdb3 --db-snapshot-identifier ${SNAP}" >> ${LOG}
+##STATUS=`aws rds create-db-snapshot --db-instance-identifier delphixdb3 --db-snapshot-identifier ${SNAP}`
+##echo "${STATUS}" >> ${LOG}
+#echo "${STATUS}" | jq -r "." >> ${LOG}
+
+#SNAP_OBJ=`echo "${STATUS}" | jq -r ".snapshots[] | select (.snapshot==\"${SNAP}\")"`
+#echo "${SNAP_OBJ}" | jq -r "." 
+
+#
+# List all snapshots ...
+#
+#echo "aws rds describe-db-snapshots --db-instance-identifier delphixdb3" >> ${LOG}
+#STATUS=`aws rds describe-db-snapshots --db-instance-identifier delphixdb3`
+#echo "${STATUS}" >> ${LOG}
+##echo "${STATUS}" | jq -r "." >> ${LOG}
+
+env | sort >> ${LOG}
+echo "Provision ------------------------------------ Ended"  >> ${LOG}
+echo "Done"
+exit
+

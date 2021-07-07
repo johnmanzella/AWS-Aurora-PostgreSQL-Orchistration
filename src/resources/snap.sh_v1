@@ -1,0 +1,69 @@
+#!/bin/bash
+
+LOG="/tmp/awspy.log"
+##env >> ${LOG}
+
+echo "Snapshot Sync ------------------------------------ Started ${DT}"  >> ${LOG}
+
+#
+# Database Name ...
+#
+# SNAP_DB="delphixdb3"
+echo "Database: ${SNAP_DB}" >> ${LOG}
+#if [[ "${SNAP_DB}" == "" ]]
+#then 
+#   die("Missing Database Name, please check code ...")
+#fi
+
+#
+# Snapshot Name ...
+#
+#DT=`date '+%Y%m%d%H%M%S'`
+DT=`date '+%Y-%m-%d-%H-%M-%S'`
+if [[ "${SNAP_NAME}" == "" ]]
+then
+   SNAP="delphix-${DT}"
+else
+   SNAP=${SNAP_NAME}
+fi
+echo "Snapshot Name: ${SNAP_NAME}" >> ${LOG}
+
+#
+# Create Snapshot ...
+# 
+echo "aws rds create-db-snapshot --db-instance-identifier ${SNAP_DB} --db-snapshot-identifier ${SNAP}" >> ${LOG}
+STATUS=`aws rds create-db-snapshot --db-instance-identifier ${SNAP_DB} --db-snapshot-identifier ${SNAP}`
+echo "${STATUS}" >> ${LOG}
+#echo "${STATUS}" | jq -r "." >> ${LOG}
+
+#SNAP_OBJ=`echo "${STATUS}" | jq -r ".snapshots[] | select (.snapshot==\"${SNAP}\")"`
+#echo "${SNAP_OBJ}" | jq -r "." 
+
+#
+# List all snapshots ...
+#
+#echo "aws rds describe-db-snapshots --db-instance-identifier ${SNAP_DB}" >> ${LOG}
+#STATUS=`aws rds describe-db-snapshots --db-instance-identifier ${SNAP_DB}`
+#echo "${STATUS}" >> ${LOG}
+##echo "${STATUS}" | jq -r "." >> ${LOG}
+
+#
+# List Created Snapshot ...
+#
+#echo "aws rds describe-db-snapshots --db-instance-identifier ${SNAP_DB} | jq ".DBSnapshots[] | select (.DBSnapshotIdentifier==\"${SNAP}\")"
+echo "Snapshot Created: " >> ${LOG}
+STATUS=`aws rds describe-db-snapshots --db-instance-identifier ${SNAP_DB} | jq ".DBSnapshots[] | select (.DBSnapshotIdentifier==\"${SNAP}\")"`
+echo "${STATUS}" >> ${LOG}
+
+#
+# Loop through while snapshot Status=creating  to  Status=available ...
+#
+# add loop code ...
+echo "Snapshot ${SNAP} Status ... " >> ${LOG}
+STATUS=`aws rds describe-db-snapshots --db-instance-identifier ${SNAP_DB} | jq ".DBSnapshots[] | select (.DBSnapshotIdentifier==\"${SNAP}\") | .Status"`
+echo "Status: ${STATUS}" >> ${LOG}
+
+env | sort >> ${LOG}
+echo "Snapshot Sync ------------------------------------ Ended"  >> ${LOG}
+exit
+

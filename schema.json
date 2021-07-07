@@ -1,0 +1,115 @@
+{
+    "repositoryDefinition": {
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" }
+        },
+        "nameField": "name",
+        "identityFields": ["name"]
+    },
+    "sourceConfigDefinition": {
+        "type": "object",
+        "required": ["name","path"],
+        "order": ["name","path","cluster"],
+        "additionalProperties": false,
+        "properties": {
+            "name": { 
+                "type": "string", 
+                "prettyName": "Dataset Name", 
+                "description": "Source Data Set Name ..." 
+            },
+            "path": { 
+                "type": "string", 
+                "format": "unixpath", 
+                "prettyName": "Path", 
+                "description": "Source Path ..." 
+            },
+            "cluster": {
+                "type": "boolean",
+                "prettyName": "Is Aurora",
+                "description": ""
+            }
+        },
+        "nameField": "name",
+        "identityFields": ["path"]
+    },
+    "linkedSourceDefinition": {
+        "type": "object",
+        "additionalProperties" : false,
+        "required": ["sourceHost", "sourcePort", "snapshotName", "mountLocation"],
+        "properties" : {
+            "sourceHost": {
+                "type": "string",
+                "prettyName": "Source Host from which to perform Snapshot",
+                "description": "",
+                "default": "localhost"
+            },
+            "sourcePort": {
+                "type": "string",
+                "prettyName": "Source Port",
+                "description": "",
+                "default": "5432"
+            },
+            "snapshotName": {
+                "type": "string",
+                "prettyName": "Snapshot Name",
+                "description": "",
+                "default": "test"
+            },
+            "mountLocation": {
+                "type": "string",
+                "format": "unixpath",
+                "prettyName": "Mount Location on Staging Host",
+                "description": "",
+                "default": "/mnt/provision/aws_stage"
+            }
+        }
+    },
+    "virtualSourceDefinition": {
+        "type": "object",
+        "additionalProperties" : false,
+        "required": ["mountLocation", "dbInstance"],
+        "properties" : {
+            "name": {
+                "type": "string",
+                "prettyName": "Database Name",
+                "description": "Name must begin with a letter; must contain only ASCII letters, digits, and hyphens; and must not end with a hyphen or contain two consecutive hyphens.",
+                "default": "vdb"
+            },
+            "mountLocation": {
+                "type": "string",
+                "format": "unixpath",
+                "prettyName": "Mount Location on Target Host",
+                "description": "Where to mount VDB onto the target host",
+                "default": "/mnt/provision/aws_vdb"
+            },
+            "subnetGroup": {
+                "type": "string",
+                "prettyName": "Subnet Group",
+                "description": "The Subnet Group where the Cluster should be created.",
+                "default": ""
+            },
+            "dbInstance": {
+                "type": "string",
+                "prettyName": "Database Instance",
+                "description": "The DB Instance class on which the database will be created.",
+                "default": "db.r5.large"
+            }
+        }
+    },
+    "snapshotDefinition": {
+        "type" : "object",
+        "additionalProperties" : false,
+        "properties" : {
+            "snapshotName": { "type": "string" }
+          , "cluster": { "type": "boolean" }
+        }
+    },
+    "snapshotParametersDefinition": {
+         "type": "object",
+         "additionalProperties": false,
+         "properties": {
+          }
+        }
+    
+}

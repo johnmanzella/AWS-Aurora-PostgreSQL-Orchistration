@@ -1,0 +1,114 @@
+#!/bin/bash
+
+LOG="/tmp/awspy.log"
+##env >> ${LOG}
+
+echo "Snapshot Sync ------------------------------------ Started ${DT}"  >> ${LOG}
+
+#
+# Database Name ...
+#
+# SNAP_DB="delphixdb3"
+echo "Database: ${SNAP_DB}" >> ${LOG}
+#if [[ "${SNAP_DB}" == "" ]]
+#then 
+#   die("Missing Database Name, please check code ...")
+#fi
+
+#
+# Snapshot Name ...
+#
+#DT=`date '+%Y%m%d%H%M%S'`
+DT=`date '+%Y-%m-%d-%H-%M-%S'`
+if [[ "${SNAP_NAME}" == "" ]]
+then
+   SNAP="delphix-${DT}"
+else
+   SNAP=${SNAP_NAME}
+fi
+echo "Snapshot Name: ${SNAP_NAME}" >> ${LOG}
+echo "Is Cluster Database: ${CLUSTER}" >> ${LOG}
+
+#
+# Create Snapshot ...
+# 
+if [[ "${CLUSTER}" == "True" ]]
+then
+   echo "aws rds create-db-cluster-snapshot --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+   STATUS=`aws rds create-db-cluster-snapshot --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+else
+   echo "aws rds create-db-snapshot --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+   STATUS=`aws rds create-db-snapshot --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+fi
+echo "${STATUS}" >> ${LOG}
+#echo "${STATUS}" | jq -r "." >> ${LOG}
+
+#SNAP_OBJ=`echo "${STATUS}" | jq -r ".snapshots[] | select (.snapshot==\"${SNAP}\")"`
+#echo "${SNAP_OBJ}" | jq -r "." 
+
+#
+# List Created Snapshot ...
+#
+#echo "aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} | jq ".DBClusterSnapshots[] | select (.DBSnapshotIdentifier==\"${SNAP}\")"
+echo "Snapshot Created: " >> ${LOG}
+if [[ "${CLUSTER}" == "True" ]]
+then
+   echo "aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+   STATUS=`aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+else
+   echo "aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+   STATUS=`aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+fi
+echo "${STATUS}" >> ${LOG}
+
+#{
+#    .DBClusterSnapshots": [
+#        {
+#            "Engine": "postgres",
+#            "Status": "creating",
+#
+SNPSTATUS=`echo "${STATUS}" | jq -r ".DBClusterSnapshots[0].Status"`
+echo "Snapshot Status: ${SNPSTATUS}" >> ${LOG}
+#
+# Loop through while snapshot Status=creating  to  Status=available ...
+#
+# add loop code ...
+DELAYTIMESEC=20
+while [[ "${SNPSTATUS}" == "creating" ]];
+do
+   sleep ${DELAYTIMESEC}
+   if [[ "${CLUSTER}" == "True" ]]
+   then
+      echo "aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+      STATUS=`aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+   else
+      echo "aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}" >> ${LOG}
+      STATUS=`aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} --db-cluster-snapshot-identifier ${SNAP}`
+   fi
+   echo "${STATUS}" >> ${LOG}
+   SNPSTATUS=`echo "${STATUS}" | jq -r ".DBClusterSnapshots[0].Status"`
+   echo "Current status as of" $(date) ": ${SNPSTATUS}"  >> ${LOG}
+done
+
+
+#########################################################
+##  Producing final status ...
+
+if [[ "${SNPSTATUS}" != "available" ]]
+then
+   echo "Error: Snapshot is NOT available, please check ${SNAP}" >> ${LOG}
+   # exit 1
+else
+   echo "Snapshot: ${SNPSTATUS} Completed ..." >> ${LOG}
+fi
+
+#echo "Snapshot ${SNAP} Status ... " >> ${LOG}
+
+#STATUS=`aws rds describe-db-cluster-snapshots --db-cluster-identifier ${SNAP_DB} | jq ".DBClusterSnapshots[] | select (.DBSnapshotIdentifier==\"${SNAP}\") | .Status"`
+#echo "Status: ${STATUS}" >> ${LOG}
+
+##env | sort >> ${LOG}
+env >> ${LOG}
+echo "Snapshot Sync ------------------------------------ Ended"  >> ${LOG}
+exit
+

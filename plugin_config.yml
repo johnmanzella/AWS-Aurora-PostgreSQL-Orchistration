@@ -1,0 +1,10 @@
+id: 3c26a012-5eb4-46bc-9a82-a298989c4ab5
+name: aws_sdk
+buildNumber: 0.1.1
+language: PYTHON27
+hostTypes:
+- UNIX
+pluginType: STAGED
+entryPoint: plugin_runner:plugin
+srcDir: src
+schemaFile: schema.json
